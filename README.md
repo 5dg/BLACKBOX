@@ -5,7 +5,7 @@
 [![Status: active development](https://img.shields.io/badge/status-active%20development-3b82f6)](https://github.com/5dg/blackbox)
 [![Domain: SOC automation](https://img.shields.io/badge/domain-SOC%20automation-22c55e)](https://github.com/5dg/blackbox)
 [![Framework: MITRE ATT&CK](https://img.shields.io/badge/framework-MITRE%20ATT%26CK-f59e0b)](https://attack.mitre.org/)
-[![Tests](https://img.shields.io/badge/tests-pytest-8b5cf6)](https://github.com/5dg/blackbox/actions)
+[![CI](https://github.com/5dg/blackbox/actions/workflows/ci.yml/badge.svg)](https://github.com/5dg/blackbox/actions/workflows/ci.yml)
 
 BLACKBOX turns submitted security telemetry into an investigation-ready record: normalized context, deterministic threat-intelligence enrichment, MITRE ATT&CK mappings, risk factors, analyst recommendations, and a live queue dashboard.
 

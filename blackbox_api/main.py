@@ -53,6 +53,12 @@ def investigate(alert: InvestigationRequest) -> dict:
 
     investigation = {
         "alert_id": alert.alert_id,
+        "source": alert.source,
+        "event_type": alert.event_type,
+        "process": alert.process,
+        "parent_process": alert.parent_process,
+        "user": alert.user,
+        "host": alert.host,
         "severity": "high" if powershell_from_word else "medium",
         "summary": (
             "Microsoft Word spawned PowerShell."
