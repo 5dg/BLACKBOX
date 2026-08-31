@@ -125,6 +125,7 @@ def latest_report() -> dict:
         "safety": {
             "analysis_only": True,
             "host_activity_performed": False,
+            "network_activity_performed": False,
             "note": "Recommendations require human validation; BLACKBOX does not perform response actions.",
         },
     }
