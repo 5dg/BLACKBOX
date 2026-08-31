@@ -13,8 +13,9 @@ class FakeResponse:
     def __exit__(self, exc_type, exc_value, traceback):
         return False
 
-    def read(self) -> bytes:
-        return json.dumps(self.payload).encode("utf-8")
+    def read(self, size=None) -> bytes:
+        payload = json.dumps(self.payload).encode("utf-8")
+        return payload if size is None else payload[:size]
 
 
 def test_openai_compatible_provider_uses_fixed_endpoint_and_returns_model_content():
@@ -43,6 +44,7 @@ def test_openai_compatible_provider_uses_fixed_endpoint_and_returns_model_conten
         model="analysis-model",
         timeout_s=12,
         transport=transport,
+        allowed_hosts={"llm.example"},
     )
 
     content = provider.complete("evidence prompt")
@@ -51,5 +53,6 @@ def test_openai_compatible_provider_uses_fixed_endpoint_and_returns_model_conten
     assert captured["url"] == "https://llm.example/v1/chat/completions"
     assert captured["authorization"] == "Bearer test-value"
     assert captured["payload"]["model"] == "analysis-model"
-    assert captured["payload"]["messages"][0]["content"] == "evidence prompt"
+    assert captured["payload"]["messages"][0]["role"] == "system"
+    assert captured["payload"]["messages"][1]["content"] == "evidence prompt"
     assert captured["timeout"] == 12

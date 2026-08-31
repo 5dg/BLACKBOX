@@ -6,6 +6,7 @@ def test_environment_configuration_creates_an_openai_compatible_harness(monkeypa
     monkeypatch.setenv("BLACKBOX_LLM_BASE_URL", "https://llm.example/v1")
     monkeypatch.setenv("BLACKBOX_LLM_API_KEY", "test-value")
     monkeypatch.setenv("BLACKBOX_LLM_MODEL", "analysis-model")
+    monkeypatch.setenv("BLACKBOX_LLM_ALLOWED_HOSTS", "llm.example")
 
     harness = build_harness_from_environment()
 

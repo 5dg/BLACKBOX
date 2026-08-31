@@ -170,6 +170,7 @@ The LLM harness is **off by default**. To enable the OpenAI-compatible adapter, 
 | `BLACKBOX_LLM_BASE_URL` | Yes | Fixed HTTPS base URL for the approved provider. |
 | `BLACKBOX_LLM_API_KEY` | Yes | Provider credential; never send it through the investigation API or commit it to Git. |
 | `BLACKBOX_LLM_MODEL` | Yes | Model identifier selected by the deployment owner. |
+| `BLACKBOX_LLM_ALLOWED_HOSTS` | Yes | Comma-separated approved provider hostnames; URLs with credentials, query strings, fragments, non-HTTPS schemes, non-default ports, or IP-address hosts are rejected. |
 
 If configuration is missing or invalid, BLACKBOX remains available for deterministic analysis and an opt-in LLM request returns a disabled/unavailable status rather than failing the core investigation flow.
 
