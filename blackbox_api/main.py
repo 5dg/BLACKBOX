@@ -88,6 +88,7 @@ def investigate(alert: InvestigationRequest) -> dict:
             "analysis_only": True,
             "host_activity_performed": False,
             "network_activity_performed": False,
+            "provider_network_activity_performed": bool(alert.enable_llm and llm_harness),
             "note": "BLACKBOX analyzes submitted telemetry only; it never executes endpoint actions.",
         },
     }

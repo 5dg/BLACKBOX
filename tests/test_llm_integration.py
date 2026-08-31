@@ -42,6 +42,7 @@ def test_opt_in_llm_analysis_is_added_to_investigation_with_audit_metadata(monke
     assert assistance["provider"] == "test-provider"
     assert assistance["analysis"]["confidence"] == "medium"
     assert assistance["audit"]["redacted_fields"] == ["alert_id", "user", "host"]
+    assert response.json()["safety"]["provider_network_activity_performed"] is True
     assert "employee01" not in provider.last_prompt
     assert "WORKSTATION-22" not in provider.last_prompt
     assert "ALRT-LLM-1" not in provider.last_prompt
