@@ -6,9 +6,12 @@ from typing import Literal
 from fastapi import FastAPI, status
 from pydantic import BaseModel, Field
 
+from blackbox_api.llm_harness import LLMHarness, build_harness_from_environment
+
 app = FastAPI(title="BLACKBOX", version="0.1.0")
 _investigations: list[dict] = []
 _severity_rank = {"critical": 4, "high": 3, "medium": 2, "low": 1}
+llm_harness: LLMHarness | None = build_harness_from_environment()
 
 
 class InvestigationRequest(BaseModel):
@@ -20,6 +23,7 @@ class InvestigationRequest(BaseModel):
     user: str = Field(min_length=1, max_length=128)
     host: str = Field(min_length=1, max_length=255)
     network_indicator: str | None = Field(default=None, max_length=255)
+    enable_llm: bool = False
 
 
 @app.get("/api/health")
@@ -87,6 +91,18 @@ def investigate(alert: InvestigationRequest) -> dict:
             "note": "BLACKBOX analyzes submitted telemetry only; it never executes endpoint actions.",
         },
     }
+    if alert.enable_llm:
+        investigation["llm_assistance"] = (
+            llm_harness.analyze(alert.model_dump(), investigation)
+            if llm_harness
+            else {
+                "status": "disabled",
+                "provider": None,
+                "model": None,
+                "analysis": None,
+                "audit": {"reason": "No LLM provider is configured."},
+            }
+        )
     _investigations.append(investigation)
     return investigation
 

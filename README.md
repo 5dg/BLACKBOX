@@ -21,9 +21,9 @@ BLACKBOX is a portfolio-quality backend foundation for that workflow. It demonst
 
 ---
 
-## The current investigation model
+## The investigation model
 
-The MVP intentionally supports a small, transparent behavior set rather than pretending to use opaque intelligence or an LLM.
+BLACKBOX uses a **deterministic baseline first** and an optional, bounded LLM layer second. The deterministic result is always preserved; an LLM can add an analyst brief only when the caller explicitly requests it and an approved provider has been configured.
 
 ### Accepted telemetry
 
@@ -70,6 +70,22 @@ The safety object consistently states:
   "network_activity_performed": false
 }
 ```
+
+### Optional LLM analyst harness
+
+When an investigation request includes `"enable_llm": true`, BLACKBOX can invoke an **approved OpenAI-compatible provider** only if the service was configured with that provider at startup. The LLM layer is disabled by default.
+
+The harness is deliberately constrained:
+
+1. **The deterministic baseline runs first.** Severity, ATT&CK mapping, risk factors, and safety fields are never delegated to the model.
+2. **Only a minimal evidence package is sent.** It includes `source`, `event_type`, `process`, and `parent_process`. Alert ID, user, host, and network indicator are redacted.
+3. **Telemetry is framed as untrusted data.** The provider prompt explicitly instructs the model not to treat evidence as instructions.
+4. **The provider endpoint is configuration-only.** A request cannot supply a model URL, key, or arbitrary connector target.
+5. **Only strict JSON output is accepted.** The model may return an analyst summary, hypotheses, missing evidence, analyst questions, confidence, and references to allowlisted evidence fields.
+6. **Every result carries audit metadata.** BLACKBOX stores provider/model identity, a hash of the sanitized prompt, redacted-field names, and output-schema version—not the raw prompt or provider key.
+7. **The model cannot act.** It receives no tools, shell access, endpoint access, network-scanning capability, containment path, or arbitrary URL-fetch capability.
+
+An LLM brief is optional context for a human analyst. It does not change the deterministic finding or authorize any response action.
 
 ---
 
@@ -128,7 +144,8 @@ curl -X POST "$BLACKBOX_URL/api/investigate" \
     "parent_process":"winword.exe",
     "user":"employee01",
     "host":"WORKSTATION-22",
-    "network_indicator":"malicious-domain.test"
+    "network_indicator":"malicious-domain.test",
+    "enable_llm":true
   }'
 ```
 
@@ -140,6 +157,21 @@ The response represents an analyst-review starting point. It is not proof of com
 curl "$BLACKBOX_URL/api/investigations"
 curl "$BLACKBOX_URL/api/reports/latest"
 ```
+
+---
+
+## LLM provider configuration
+
+The LLM harness is **off by default**. To enable the OpenAI-compatible adapter, configure the service environment before startup:
+
+| Variable | Required when enabled | Purpose |
+|---|---:|---|
+| `BLACKBOX_LLM_PROVIDER` | Yes | Must be `openai_compatible`. Any other value keeps the harness disabled. |
+| `BLACKBOX_LLM_BASE_URL` | Yes | Fixed HTTPS base URL for the approved provider. |
+| `BLACKBOX_LLM_API_KEY` | Yes | Provider credential; never send it through the investigation API or commit it to Git. |
+| `BLACKBOX_LLM_MODEL` | Yes | Model identifier selected by the deployment owner. |
+
+If configuration is missing or invalid, BLACKBOX remains available for deterministic analysis and an opt-in LLM request returns a disabled/unavailable status rather than failing the core investigation flow.
 
 ---
 
@@ -166,6 +198,7 @@ BLACKBOX is meant to show practical backend/security-engineering skills:
 - transparent rule-based security analysis;
 - ATT&CK-aligned output and analyst-oriented reporting;
 - safe handling of submitted telemetry without live collection or response actions;
+- an opt-in LLM harness with evidence minimization, prompt-injection boundaries, schema validation, provider isolation, and audit metadata;
 - unit/integration API tests;
 - deterministic, repeatable test fixtures;
 - dependency locking, wheel packaging, Docker configuration, and GitHub Actions CI; and
@@ -204,7 +237,7 @@ The next legitimate expansion points are deliberately defensive and analyst-focu
 - rate limiting, structured logging, and deployment observability;
 - approved, read-only SIEM/EDR and threat-intelligence adapters;
 - retrieval over approved internal detection documentation; and
-- configurable LLM assistance with redaction, data governance, citations, and mandatory human review.
+- multi-provider LLM support with deployment-level data governance, citations, and mandatory human review.
 
 None of those additions should introduce endpoint control, scanning, live execution, or autonomous response.
 
