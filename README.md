@@ -229,17 +229,30 @@ A Dockerfile is included for containerized API deployment.
 
 ## Roadmap
 
-The next legitimate expansion points are deliberately defensive and analyst-focused:
+BLACKBOX is complete as a portfolio v1. The next deliberate phases are:
 
-- PostgreSQL-backed case and investigation storage;
+### Durable case workflow
+
+- PostgreSQL-ready case and investigation storage;
+- immutable audit records for deterministic analysis and LLM-assistance metadata;
+- database migrations, retention controls, and exportable case history; and
+- queue/worker infrastructure for longer-running enrichment work.
+
+### LLM reliability and evaluation
+
+- bounded model-output content and response-size controls;
+- representative security-analysis evaluation fixtures;
+- regression scoring for grounded references, schema compliance, and unsafe-output rejection; and
+- multi-provider support with deployment-level data governance, citations, and mandatory human review.
+
+### Operational hardening
+
 - authenticated analyst workflow and role-based access;
-- immutable audit records and retention controls;
-- rate limiting, structured logging, and deployment observability;
-- approved, read-only SIEM/EDR and threat-intelligence adapters;
-- retrieval over approved internal detection documentation; and
-- multi-provider LLM support with deployment-level data governance, citations, and mandatory human review.
+- API keys/service identities, rate limiting, and request-size limits;
+- structured logs, metrics, readiness checks, and deployment observability; and
+- approved, read-only SIEM/EDR and threat-intelligence adapters.
 
-None of those additions should introduce endpoint control, scanning, live execution, or autonomous response.
+None of these phases should introduce endpoint control, scanning, live execution, or autonomous response.
 
 ---
 
