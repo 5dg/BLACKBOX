@@ -1,25 +1,26 @@
 # BLACKBOX
 
-> **AI-assisted security investigation for analyst review — built as a safe, defensive portfolio project.**
+> **Backend-first, AI-assisted security investigation for analyst review — built as a safe, defensive portfolio project.**
 
 [![Status: active development](https://img.shields.io/badge/status-active%20development-3b82f6)](https://github.com/5dg/blackbox)
 [![Domain: SOC automation](https://img.shields.io/badge/domain-SOC%20automation-22c55e)](https://github.com/5dg/blackbox)
 [![Framework: MITRE ATT&CK](https://img.shields.io/badge/framework-MITRE%20ATT%26CK-f59e0b)](https://attack.mitre.org/)
 [![CI](https://github.com/5dg/blackbox/actions/workflows/ci.yml/badge.svg)](https://github.com/5dg/blackbox/actions/workflows/ci.yml)
 
-BLACKBOX turns submitted security telemetry into an investigation-ready record: normalized context, deterministic threat-intelligence enrichment, MITRE ATT&CK mappings, risk factors, analyst recommendations, and a live queue dashboard.
+BLACKBOX turns submitted security telemetry into investigation-ready API records: normalized context, deterministic intelligence enrichment, MITRE ATT&CK mappings, risk factors, analyst recommendations, and priority reporting.
 
 It is intentionally a **read-only analysis MVP**. It never executes scripts, sends endpoint commands, scans a host, contacts indicators, or takes containment actions.
 
 ## What it demonstrates
 
-- **Alert ingestion** through a typed FastAPI contract
-- **Process-chain analysis** for suspicious Office → PowerShell behavior
-- **MITRE ATT&CK mapping** for PowerShell (`T1059.001`)
-- **Deterministic intelligence enrichment** for safe demonstration data
-- **Investigation queue and reporting** with high-priority triage
-- **Human-in-the-loop boundary** repeated in the API and dashboard
-- **A polished SOC dashboard** that can load a synthetic demo alert
+- Typed alert ingestion through FastAPI
+- Process-chain analysis for suspicious Office → PowerShell behavior
+- MITRE ATT&CK mapping for PowerShell (`T1059.001`)
+- Deterministic intelligence enrichment for safe demonstration data
+- Investigation queue and analyst-facing reports through an API
+- Preserved source, process, user, and host context in investigation output
+- Human-in-the-loop boundary repeated in the API contract and reports
+- Automated tests, lockfile, wheel packaging, Docker configuration, and GitHub Actions CI
 
 ## Architecture
 
@@ -33,21 +34,21 @@ FastAPI validation ──► deterministic investigation engine
        │                         ├── MITRE ATT&CK mapping
        │                         └── demo intelligence catalog
        ▼
-In-memory investigation queue ──► analyst report + dashboard
+In-memory investigation queue ──► analyst report API
 ```
 
 The MVP deliberately stores investigations **in memory** so it is runnable with no external services. A production evolution would introduce PostgreSQL for durable investigations, Redis for queues/caching, vetted threat-intelligence connectors, and a retrieval layer with approved internal knowledge sources.
 
-## Quick start
+## Run locally
 
 Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uv sync --dev
-uv run uvicorn blackbox_api.main:app --reload
+uv run uvicorn blackbox_api.main:app
 ```
 
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000) for the dashboard or [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) for interactive API documentation.
+BLACKBOX is API-only. Use the OpenAPI route exposed by your deployment (`/docs`) or your preferred HTTP client.
 
 Run the test suite:
 
@@ -74,13 +75,12 @@ Submits telemetry for analysis only.
 }
 ```
 
-An Office-to-PowerShell chain returns a `high` severity assessment, `T1059.001`, explainable risk factors, a `suspicious` **demo-catalog** reputation, and explicit `analysis_only` safety markers.
+An Office-to-PowerShell chain returns a `high` severity assessment, `T1059.001`, explainable risk factors, a `suspicious` **demo-catalog** reputation, preserved event context, and explicit `analysis_only` safety markers.
 
 ### Other endpoints
 
 | Endpoint | Purpose |
 | --- | --- |
-| `GET /` | Analyst dashboard |
 | `GET /api/health` | Safe operational mode and connector state |
 | `GET /api/investigations` | Newest-first investigation queue and summary metrics |
 | `GET /api/reports/latest` | Human-review-oriented prioritization report |
@@ -100,7 +100,7 @@ BLACKBOX is designed for authorized, defensive security operations and education
 
 - [x] Typed alert ingestion and explainable investigation output
 - [x] MITRE mapping and safe intelligence fixture enrichment
-- [x] Investigation queue, report, dashboard, and test coverage
+- [x] Investigation queue, report API, and test coverage
 - [ ] Persistent PostgreSQL-backed case management
 - [ ] Approved, read-only intelligence and SIEM connectors
 - [ ] Analyst-authenticated case workflow and audit log

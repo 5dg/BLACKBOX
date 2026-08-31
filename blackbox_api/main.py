@@ -1,17 +1,14 @@
 """BLACKBOX: safe, deterministic security investigation API."""
 
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI, status
-from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 app = FastAPI(title="BLACKBOX", version="0.1.0")
 _investigations: list[dict] = []
 _severity_rank = {"critical": 4, "high": 3, "medium": 2, "low": 1}
-_dashboard = Path(__file__).parent / "static" / "index.html"
 
 
 class InvestigationRequest(BaseModel):
@@ -23,12 +20,6 @@ class InvestigationRequest(BaseModel):
     user: str = Field(min_length=1, max_length=128)
     host: str = Field(min_length=1, max_length=255)
     network_indicator: str | None = Field(default=None, max_length=255)
-
-
-@app.get("/", include_in_schema=False)
-def dashboard() -> FileResponse:
-    """Serve the analyst dashboard."""
-    return FileResponse(_dashboard)
 
 
 @app.get("/api/health")

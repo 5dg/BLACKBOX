@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from blackbox_api.main import app
 
 
-def test_investigation_preserves_alert_identity_fields_for_dashboard_rendering():
+def test_investigation_preserves_alert_identity_fields_in_api_output():
     response = TestClient(app).post(
         "/api/investigate",
         json={
