@@ -83,7 +83,7 @@ The harness is deliberately constrained:
 4. **The provider endpoint is configuration-only.** A request cannot supply a model URL, key, or arbitrary connector target.
 5. **Only strict JSON output is accepted.** The model may return an analyst summary, hypotheses, missing evidence, analyst questions, confidence, and references to allowlisted evidence fields.
 6. **Every result carries audit metadata.** BLACKBOX stores provider/model identity, a hash of the sanitized prompt, redacted-field names, and output-schema version—not the raw prompt or provider key.
-7. **The model cannot act.** It receives no tools, shell access, endpoint access, network-scanning capability, containment path, or arbitrary URL-fetch capability.
+7. **The model cannot act.** It receives no tools, shell access, endpoint access, network-scanning capability, containment path, or arbitrary URL-fetch capability. The investigation safety record separately reports whether an enabled provider request was made; this is distinct from endpoint or target-network activity.
 
 An LLM brief is optional context for a human analyst. It does not change the deterministic finding or authorize any response action.
 
